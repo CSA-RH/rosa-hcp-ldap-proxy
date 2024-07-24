@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openldap-server
+  labels:
+    app: openldap-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openldap-server
+  template:
+    metadata:
+      labels:
+        app: openldap-server
+    spec:
+      containers:
+      - name: openldap-server
+        image: botbench/openldap:latest
+        ports:
+        - containerPort: 1389
+          name: ldap
+        - containerPort: 1636
+          name: ldaps
+        env:
+        - name: LDAP_ADMIN_USERNAME
+          value: "admin"
+        - name: LDAP_ADMIN_PASSWORD
+          value: "adminpassword"
+        - name: LDAP_USERS
+          value: "user01,user02"
+        - name: LDAP_PASSWORDS
+          value: "password01,password02"
+        - name: LDAP_ROOT
+          value: "dc=example,dc=org"
+        - name: LDAP_BASE_DN
+          value: "dc=example,dc=org"
+        volumeMounts:
+        - name: openldap-data
+          mountPath: /bitnami/openldap
+      volumes:
+      - name: openldap-data
+        persistentVolumeClaim:
+          claimName: openldap-data-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: openldap-data-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openldap-server-service
+  labels:
+    app: openldap-server
+spec:
+  selector:
+    app: openldap-server
+  ports:
+  - name: ldap
+    protocol: TCP
+    port: 1389
+    targetPort: 1389
+  - name: ldaps
+    protocol: TCP
+    port: 1636
+    targetPort: 1636
+  type: ClusterIP
+
