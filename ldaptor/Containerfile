@@ -1,0 +1,10 @@
+FROM python:3
+LABEL io.k8s.description Logging LDAP proxy with ldaptor and Twisted
+EXPOSE 10389/tcp
+
+COPY main.py requirements.txt /proxy
+RUN pip install -r /proxy/requirements.txt && \
+  chgrp -R 0 /proxy && \
+  chmod -R g=u /proxy
+
+CMD ["twistd", "--pidfile", "/tmp/ldaptor-proxy.pid", "-ny", "/proxy/main.py"]

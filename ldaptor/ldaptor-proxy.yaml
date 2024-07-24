@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ldaptor-proxy
+  labels:
+    app: ldaptor-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ldaptor-proxy
+  template:
+    metadata:
+      labels:
+        app: ldaptor-proxy
+    spec:
+      containers:
+      - name: ldaptor-proxy
+        image: botbench/ldaptor-proxy:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 1389
+          name: ldap
+        env:
+        - name: PROXY_PORT
+          value: "1389"
+        - name: PROXY_ENDPOINT_HOST
+          value: "openldap-server-service.openldap"
+        - name: "PROXY_ENDPOINT_PORT"
+          value: "1389"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ldaptor-proxy-service
+  labels:
+    app: ldaptor-proxy
+spec:
+  selector:
+    app: ldaptor-proxy
+  ports:
+  - name: ldap
+    protocol: TCP
+    port: 1389
+    targetPort: 1389
+  type: ClusterIP
+
