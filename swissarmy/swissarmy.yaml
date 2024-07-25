@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: swissarmy-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: swissarmy
+  template:
+    metadata:
+      labels:
+        app: swissarmy
+    spec:
+      containers:
+      - name: swissarmy
+        image: mbentley/swissarmy:latest
+        imagePullPolicy: Always
+        command: ["sleep", "3600"]
