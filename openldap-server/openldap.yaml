@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: openldap-server
-        image: botbench/openldap:latest
+        image: quay.io/rhn_support_xsoldaat/openldap-ocp:latest
         ports:
         - containerPort: 1389
           name: ldap
