@@ -51,7 +51,7 @@ sn: Bar2
 # numResponses: 2
 # numEntries: 1
 ```
-If all is running well, the responses should be identical. If now, check the logs of the ldaptor proxy and OpenLDAP proxy for errors.
+If all is running well, the responses should be identical. If not, check the logs of the ldaptor proxy and OpenLDAP proxy for errors.
 ### Configuring the Identity Provider
 Navigate to the [Red Hat Hybrid Cloud Console](https://console.redhat.com/openshift/). Select your cluster and click on the *Access Control" tab* There you will find a list of currently configured identity providers. Click the *Add identity provider* button and select LDAP.
 ![Add an identity provider - select LDAP](img/add-provider.png)
