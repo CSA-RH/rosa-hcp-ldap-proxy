@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: ldaptor-proxy
-        image: botbench/ldaptor-proxy:latest
+        image: quay.io/rhn_support_xsoldaat/ldaptor-proxy
         imagePullPolicy: Always
         ports:
         - containerPort: 1389
