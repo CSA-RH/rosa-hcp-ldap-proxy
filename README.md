@@ -1,5 +1,5 @@
 # ROSA HCP LDAP Proxy Demo
-Container files and configurations for ROSA HCP with LDAP proxy. 
+Container files and configurations for ROSA HCP with LDAP proxy. ***Please note that this is for demo purposes only and should never be used in production as-is.***
 
 ### Problem definition and solution
 When using ROSA with Hosted Control Plane, in combination with an LDAP IDM, the requests will originate from the Red Hat-owned networks, rather than the VPC of the cluster's owner. This may be problematic for environments with strict security policies. 
@@ -17,7 +17,7 @@ The demo consists of 3 parts:
 * Bring up the OpenLDAP service with `oc apply -f openldap-server/openldap.yaml`
 * Bring up the ldaptor proxy with `oc apply -f ldaptor/ldaptor-proxy.yaml`
 
-Please note that the ldaptor proxy will only bring up once instance, if you want more, feel free to adjust the number of replicas. The OpenLDAP server is not configured for High Availability, that is beyond the scope of this demo.
+Please note that the ldaptor proxy will only bring up one instance, if you want more, feel free to adjust the number of replicas. The OpenLDAP server is not configured for High Availability, that is beyond the scope of this demo.
 
 ### Testing the OpenLDAP server and ldaptor proxy
 Included in this repo is a Deployment for the swissarmy container, which has many tools, including the openldap client utilities. You can deploy this container using `oc apply -f swissarmy/swissarmy.yaml`
