@@ -1,17 +1,21 @@
 # ROSA HCP LDAP Proxy Demo
+
 Container files and configurations for ROSA HCP with LDAP proxy. ***Please note that this is for demo purposes only and should never be used in production as-is.***
 
 ### Problem definition and solution
+
 When using ROSA with Hosted Control Plane, in combination with an LDAP IDM, the requests will originate from the Red Hat-owned networks, rather than the VPC of the cluster's owner. This may be problematic for environments with strict security policies. 
 
 This demo shows that the LDAP requests can easily be bounced via one or more of the worker nodes in the cluster's owner's VPC. These do not have to be special nodes, but could potentially be deployed on nodes designated to other infrastructure functionalities.
 
 The demo consists of 3 parts:
+
 * The OpenLDAP server containing some demo users
 * The ldaptor-based LDAP Proxy
 * The IDM configuration
 
 ### Setitng up the environment
+
 * Bring up a ROSA HCP cluster, you can use the [AWS ROSA with hosted control planes cluster (ROSA HCP) fast deploy](https://github.com/CSA-RH/rosa-hcp-fast-deploy) repo to bring one up with a nice menu-driven setup.
 * Create a new project with `oc new-project openldap`
 * Bring up the OpenLDAP service with `oc apply -f openldap-server/openldap.yaml`
@@ -20,9 +24,11 @@ The demo consists of 3 parts:
 Please note that the ldaptor proxy will only bring up one instance, if you want more, feel free to adjust the number of replicas. The OpenLDAP server is not configured for High Availability, that is beyond the scope of this demo.
 
 ### Testing the OpenLDAP server and ldaptor proxy
+
 Included in this repo is a Deployment for the swissarmy container, which has many tools, including the openldap client utilities. You can deploy this container using `oc apply -f swissarmy/swissarmy.yaml`
 
 Start a shell in the swissarmy container and launch a test query with the `ldapsearch` command directly to the OpenLDAP server
+
 ```
 ❯ oc exec --tty --stdin deployment/swissarmy-deployment -- /bin/bash
 swissarmy-deployment-677dd6b8cb-7kvpb:/$ ldapsearch -x -H ldap://openldap-server-service.openldap:1389 -b "dc=example,dc=org"  "(sn=Bar2)"
@@ -36,9 +42,11 @@ sn: Bar2
 ...
 # numResponses: 2
 # numEntries: 1
-```
+```shell
+
 Now, launch an LDAP query via the ldaptor proxy with the following command:
-```
+
+```shell
 swissarmy-deployment-677dd6b8cb-7kvpb:/$ ldapsearch -x -H ldap://ldaptor-proxy-service.openldap:1389 -b "dc=example,dc=org"  "(sn=Bar2)"
 # extended LDIF
 ...
@@ -51,8 +59,11 @@ sn: Bar2
 # numResponses: 2
 # numEntries: 1
 ```
+
 If all is running well, the responses should be identical. If not, check the logs of the ldaptor proxy and OpenLDAP proxy for errors.
+
 ### Configuring the Identity Provider
+
 Navigate to the [Red Hat Hybrid Cloud Console](https://console.redhat.com/openshift/). Select your cluster and click on the *Access Control" tab* There you will find a list of currently configured identity providers. Click the *Add identity provider* button and select LDAP.
 ![Add an identity provider - select LDAP](img/add-provider.png)
 
@@ -63,15 +74,18 @@ Before clicking on the *Add* button, open the *Advanced settings* and make sure 
 Click the *Add* button at the bottom of the form and give it a few minutes for the changes to pushed to the cluster and for the oauth containers to be recreated with the new configuration.
 
 ### Logging in with LDAP
+
 Open the web console of your cluster in an incognito window, and select the *LDAP* provider
 ![Select LDAP](img/login-select-ldap.png)
 Fill in the username and password (user01/password01)
 ![Fill in username and password](img/login-username.png)
 If all is configured properly, you should be greeted with the developer aspect of the cluster's web console.
 ![I'm in the mainframe!](img/login-success.png)
+
 ### Debugging the server and proxy
+
 You can view the log of the ldaptor proxy service with 
-```
+```shell
 ❯ oc logs -f deployment/ldaptor-proxy 
 2024-07-25T09:23:18+0000 [-] Loading /proxy/main.py...
 2024-07-25T09:23:18+0000 [-] Loaded.
@@ -88,7 +102,7 @@ You can view the log of the ldaptor proxy service with
 2024-07-25T14:45:51+0000 [twisted.internet.endpoints.OneShotFactory#info] Stopping factory <twisted.internet.endpoints.connectProtocol.<locals>.OneShotFactory object at 0x7f0f462722d0>
 ```
 To view the OpenLDAP log, you can do the following:
-```
+```shell
 ❯ oc logs -f deployment/openldap-server
  09:19:58.17 INFO  ==> ** Starting LDAP setup **
  09:19:58.20 INFO  ==> Validating settings in LDAP_* env vars
